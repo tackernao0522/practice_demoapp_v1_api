@@ -3,7 +3,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true,
             length: {
-              maxmum: 30,
+              maximum: 30,
               allow_blank: true
             }
 
