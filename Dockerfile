@@ -28,9 +28,12 @@ WORKDIR ${HOME}
 # コピー先(コンテナ) ... 絶対パス or 相対パス(./ ... 今いる(カレント)ディレクトリ)
 COPY Gemfile* ./
 
+# ENV BUNDLER_VERSION 2.2.17
+
 # apk ... Alpine Linuxのコマンド
 # apk update = パッケージの最新リストを取得
 RUN apk update && \
+  gem install bundler --no-document bundler:2.2.17 && \
   # apk upgrade = インストールパッケージを最新のものに
   apk upgrade && \
   # apk add = パッケージのインストールを実行
