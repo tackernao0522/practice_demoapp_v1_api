@@ -1,9 +1,11 @@
-require "validator/email_validator"
+require 'validator/email_validator'
 
 class User < ApplicationRecord
+  include TokenGenerateService # 追加 Token生成モジュール
+
   # Userクラスの一番上に追加
   # バリデーション直前
-  before_validation :downcase_email # 追加
+  before_validation :downcase_email
 
   # gem bcrypt
   # 1. passwordを暗号化する
@@ -18,40 +20,42 @@ class User < ApplicationRecord
   # validates
   # User.create(name: "                                        ")
   # 名前を入力してください。文字数は30文字まで(空白の場合には出ないようにする allow_blank: true)
-  validates :name, presence: true,      # 入力必須
-                    length: {
-                      maximum: 30,      # 最大文字数
-                      allow_blank: true # Null(nil), 空白文字の場合スキップ(空白文字の場合には無駄な検証を行わない)
-                    }
-  validates :email, presence: true,
-                    email: { allow_blank: true }
+  validates :name,
+            presence: true,
+            length: {
+              maximum: 30,
+              # Null(nil), 空白文字の場合スキップ(空白文字の場合には無駄な検証を行わない)
+              # 入力必須
+              # 最大文字数
+              allow_blank: true
+            }
+  validates :email, presence: true, email: { allow_blank: true }
 
-  VALID_PASSWORD_REGEX = /\A[\w\-]+\z/ # 先頭から末尾まで、全て「a-zA-Z0-9_」と「-」にマッチする文字列を許容する。
-  # \A     => 文字列の先頭にマッチ
-  # [\w\-] => a-zA-X0-9_-
-  # +      => 1文字以上繰り返す
-  # \z     => 文字列の末尾にマッチ
-  validates :password, presence: true, # nameのみのupdate時にpasswordがnilになっていてもpassword必須とはならない(allow_nilが利く)
-                      length: {               # 最小文字数
-                        minimum: 8,
-                        allow_blank: true
-                      },
-                      format: {               # 書式チェック
-                        with: VALID_PASSWORD_REGEX,
-                        message: :invalid_password,
-                        allow_blank: true
-                      },
-                      allow_nil: true # 空パスワードのアップデートを許容する。(Null(nil)の場合スキップ)
-  # 追加
+  VALID_PASSWORD_REGEX = /\A[\w\-]+\z/ # \z     => 文字列の末尾にマッチ
+  validates :password,
+            presence: true,
+            length: {
+              minimum: 8,
+              # nameのみのupdate時にpasswordがnilになっていてもpassword必須とはならない(allow_nilが利く)
+              # 最小文字数
+              allow_blank: true
+            },
+            format: {
+              # 書式チェック
+              with: VALID_PASSWORD_REGEX,
+              message: :invalid_password,
+              allow_blank: true
+            },
+            # 空パスワードのアップデートを許容する。(Null(nil)の場合スキップ)
+            allow_nil: true
+
   ## methods
   # class method  ###########################
   class << self
-    # emailからアクティブなユーザーを返す
     def find_by_activated(email)
       find_by(email: email, activated: true)
     end
-  end
-  # class method end #########################
+  end # class method end #########################
 
   # 自分以外の同じemailのアクティブなユーザーがいる場合にtrueを返す
   def email_activated?
@@ -71,9 +75,8 @@ class User < ApplicationRecord
 
   private
 
-    # email小文字化
-    def downcase_email
-      self.email.downcase! if email
-    end
-  # ここまで
+  # email小文字化
+  def downcase_email
+    self.email.downcase! if email
+  end # emailからアクティブなユーザーを返す
 end
