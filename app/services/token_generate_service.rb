@@ -1,11 +1,14 @@
-module TokenGenerateService # include時の初期化処理実行場所(include先のオブジェクト)
+module TokenGenerateService
+  # include時の初期化処理実行場所(include先のオブジェクト)
   def self.included(base)
     # include時にクラスメソッドを追加する
     base.extend ClassMethods
   end
 
   ## クラスメソッド
-  module ClassMethods # アクセストークンのインスタンス生成(オプション => sub: encrypt user id)
+  module ClassMethods
+
+    # アクセストークンのインスタンス生成(オプション => sub: encrypt user id)
     def decode_access_token(token, options = {})
       UserAuth::AccessToken.new(token: token, options: options)
     end
@@ -24,6 +27,7 @@ module TokenGenerateService # include時の初期化処理実行場所(include�
     def from_refresh_token(token)
       decode_refresh_token(token).entity_for_user
     end
+
   end
 
   ## インスタンスメソッド
