@@ -39,6 +39,9 @@ module App
     # $LOAD_PATHにautoload pathを追加しない(Zeitwerk有効時false推奨)
     config.add_autoload_paths_to_load_path = false
 
+    # Cookieを処理するmiddleware
+    config.middleware.use ActionDispatch::Cookies
+
     config.api_only = true
   end
 end
